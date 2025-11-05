@@ -52,7 +52,7 @@ async fn handle_connection(
                 encoder.encode_image(&img)?;
                 ws_sender.send(Message::Binary(jpeg_data)).await?;
 
-                break Ok(());
+                tokio::time::sleep(std::time::Duration::from_millis(1000 / 30)).await;
             }
             Err(ref e) if e.kind() == WouldBlock => {
                 tokio::time::sleep(std::time::Duration::from_millis(10)).await;
