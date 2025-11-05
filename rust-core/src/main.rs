@@ -1,11 +1,30 @@
+use futures_util::{SinkExt, StreamExt};
 use image::codecs::jpeg::JpegEncoder;
 use image::{ImageBuffer, Rgb};
 use scrap::{Capturer, Display};
-use std::fs::File;
-use std::io::ErrorKind::WouldBlock;
-use std::{thread, time};
+use std::io::Cursor;
+use tokio::io::ErrorKind::WouldBlock;
+use tokio::net::TcpListener;
+use tokio_tungstenite::accept_async;
+use tokio_tungstenite::tungstenite::Message;
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let listener = TcpListener::bind("0.0.0.0:9002").await?;
+    println!("WebSocket server started on ws://0.0.0.0:9002");
+
+    while let Ok((stream, _)) = listener.accept().await {
+        handle_connection(stream).await?;
+    }
+    Ok(())
+}
+
+async fn handle_connection(
+    stream: tokio::net::TcpStream,
+) -> Result<(), Box<dyn std::error::Error>> {
+    let ws_stream = accept_async(stream).await.unwrap();
+    let (mut ws_sender, _) = ws_stream.split();
+
     let display = Display::primary()?;
     let mut capturer = Capturer::new(display)?;
 
@@ -27,14 +46,16 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         }
                     }
                 }
-                let mut file = File::create("screenshot.jpg")?;
-                let mut encoder = JpegEncoder::new_with_quality(&mut file, 95); // 95 — high quality(0–100)
+                let mut jpeg_data = Vec::new();
+                let mut cursor = Cursor::new(&mut jpeg_data);
+                let mut encoder = JpegEncoder::new_with_quality(&mut cursor, 85);
                 encoder.encode_image(&img)?;
+                ws_sender.send(Message::Binary(jpeg_data)).await?;
 
                 break Ok(());
             }
             Err(ref e) if e.kind() == WouldBlock => {
-                thread::sleep(time::Duration::from_millis(10));
+                tokio::time::sleep(std::time::Duration::from_millis(10)).await;
                 continue;
             }
             Err(e) => return Err(Box::new(e)),
