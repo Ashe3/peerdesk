@@ -1,6 +1,6 @@
 # PeerDesk
 
-A minimal open-source remote desktop solution for personal/private use, inspired by AnyDesk/TeamViewer.  
+A minimal open-source remote desktop solution for personal/private use, inspired by similar apps.  
 Tech stack: **Rust** for core screen capture/input, **Electron/Node.js** for cross-platform GUI and connectivity.
 
 ## Features (planned)
