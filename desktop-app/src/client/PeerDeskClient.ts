@@ -44,7 +44,7 @@ export class PeerDeskClient {
       const url = URL.createObjectURL(blob);
       this.screenImage.src = url;
 
-      // Освобождаем URL после загрузки
+      // Release URL after loading
       this.screenImage.onload = () => URL.revokeObjectURL(url);
     };
 
