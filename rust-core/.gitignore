@@ -1,0 +1,11 @@
+/target
+**/*.rs.bk
+Cargo.lock
+# Если проект — библиотека, Cargo.lock можно не игнорировать
+# Если бинарник — лучше оставить в репозитории
+
+# IDE/Editor files
+.idea/
+.vscode/
+*.swp
+.DS_Store
