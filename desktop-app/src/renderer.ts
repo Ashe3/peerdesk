@@ -27,7 +27,12 @@
  */
 
 import './index.css';
+import { PeerDeskClient } from './client/PeerDeskClient';
 
 console.log(
-  '👋 This message is being logged by "renderer.ts", included via Vite',
+  '👋 This message is being logged by "renderer.ts", included via Vite'
 );
+
+document.addEventListener('DOMContentLoaded', () => {
+  new PeerDeskClient();
+});
