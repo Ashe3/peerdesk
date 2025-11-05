@@ -31,10 +31,12 @@ async fn handle_connection(
     let width = capturer.width();
     let height = capturer.height();
 
+    let mut img = ImageBuffer::<Rgb<u8>, Vec<u8>>::new(width as u32, height as u32);
+    let mut jpeg_data = Vec::new();
+
     loop {
         match capturer.frame() {
             Ok(frame) => {
-                let mut img = ImageBuffer::<Rgb<u8>, Vec<u8>>::new(width as u32, height as u32);
                 let stride = width * 4;
                 for y in 0..height {
                     let row_start = y * stride;
@@ -46,11 +48,12 @@ async fn handle_connection(
                         }
                     }
                 }
-                let mut jpeg_data = Vec::new();
+
+                jpeg_data.clear();
                 let mut cursor = Cursor::new(&mut jpeg_data);
                 let mut encoder = JpegEncoder::new_with_quality(&mut cursor, 85);
                 encoder.encode_image(&img)?;
-                ws_sender.send(Message::Binary(jpeg_data)).await?;
+                ws_sender.send(Message::Binary(jpeg_data.clone())).await?;
 
                 tokio::time::sleep(std::time::Duration::from_millis(1000 / 30)).await;
             }
