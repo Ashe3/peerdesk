@@ -39,7 +39,7 @@ export class PeerDeskClient {
     };
 
     this.ws.onmessage = (event) => {
-      // Получаем JPEG-байты и отображаем как изображение
+      // Receive JPEG bytes and display as image
       const blob = new Blob([event.data], { type: 'image/jpeg' });
       const url = URL.createObjectURL(blob);
       this.screenImage.src = url;
