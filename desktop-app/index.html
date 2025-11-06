@@ -1,0 +1,27 @@
+<!doctype html>
+<html>
+
+<head>
+	<meta charset="UTF-8" />
+	<title>Hello World!</title>
+
+</head>
+
+<body>
+	<h1>PeerDesk Remote Screen</h1>
+
+	<div>
+		<input type="text" id="serverUrl" placeholder="ws://localhost:9002" value="ws://localhost:9002" />
+		<button id="connectBtn">Connect</button>
+		<button id="disconnectBtn" disabled>Disconnect</button>
+	</div>
+
+	<div id="status">Not connected</div>
+
+	<div id="screenContainer">
+		<img id="screenImage" style="max-width: 100%; height: auto; border: 1px solid #ccc;" />
+	</div>
+	<script type="module" src="/src/renderer.ts"></script>
+</body>
+
+</html>
